@@ -1,7 +1,8 @@
 import 'package:expense_tracker/DateTime/date_time_helper.dart';
 import 'package:expense_tracker/models/expense_item.dart';
+import 'package:flutter/material.dart';
 
-class ExpenseData {
+class ExpenseData extends ChangeNotifier {
   //list of all the expenses
   List<ExpenseItem> overallExpenseList = [];
 
@@ -13,11 +14,13 @@ class ExpenseData {
   // add new expense
   void addNewExpense(ExpenseItem newItem) {
     overallExpenseList.add(newItem);
+    notifyListeners();
   }
 
   // delete an expense
   void deleteExpense(ExpenseItem iteam) {
     overallExpenseList.remove(iteam);
+    notifyListeners();
   }
 
   //get the date for the start of the week (sunday)
