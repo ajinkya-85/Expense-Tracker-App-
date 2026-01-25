@@ -2,9 +2,16 @@
 
 App status under development 
 
-## Getting Started
+completed work :- 
+1) List tiles are completed.
+2) Expenses add and works in UI
+3) Basic UI is done 
 
-This project is a starting point for a Flutter application.
+Todo :- 
+1) Add bar graph for an expense summary.
+2) Back-end 
+
+## Getting Started
 
 A few resources to get you started if this is your first Flutter project:
 
