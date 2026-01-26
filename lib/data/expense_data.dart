@@ -35,7 +35,10 @@ class ExpenseData extends ChangeNotifier {
         startOfWeek = today.subtract(Duration(days: i));
       }
     }
-    return startOfWeek!;
+    return startOfWeek ??
+        today.subtract(
+          Duration(days: today.weekday - 1),
+        ); //provided default value
   }
 
   // get weekday expense from the datatime obj.
