@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:expense_tracker/components/expense_summary.dart';
 import 'package:expense_tracker/components/expense_tile.dart';
 import 'package:expense_tracker/data/expense_data.dart';
@@ -72,12 +74,15 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.grey[300],
         floatingActionButton: FloatingActionButton(
           onPressed: addNewExpense,
-          child: Icon(Icons.add),
+          child: Icon(Icons.add, color: Colors.white),
+          backgroundColor: Colors.black,
         ),
         body: ListView(
           children: [
             //weekly summary
             ExpenseSummary(startOfWeek: value.startOfWeekDate()),
+
+            const SizedBox(height: 20),
             //expense list
             ListView.builder(
               shrinkWrap: true,
