@@ -8,7 +8,6 @@
 
 1. List tiles are completed.
 2. Expenses add and works in UI
-3. Basic UI is done
 
 **Todo** :-
 
