@@ -1,6 +1,6 @@
 # expense_tracker
 
-## App status under development.
+## App status under development
 
 ---
 
