@@ -14,4 +14,4 @@
 1. Add bar graph for an expense summary.
 2. Back-end
 
-------
+-------
