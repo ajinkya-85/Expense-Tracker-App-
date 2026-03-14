@@ -1,26 +1,21 @@
 import 'package:expense_tracker/data/expense_data.dart';
+import 'package:expense_tracker/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_tracker/pages/home_page.dart';
 import 'package:provider/provider.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-
-import 'models/expense_item.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // initialize hive
-  await Hive.initFlutter();
+  // initialize firebase
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // register adapter
-  Hive.registerAdapter(ExpenseItemAdapter());
-
-  // open a hive box
-  await Hive.openBox("expense_database");
   runApp(
     ChangeNotifierProvider(
-      create: (context) => ExpenseData(),
-      builder: (context, child) => MaterialApp(
+      create: (context) =>
+          ExpenseData(), // The constructor now handles data loading via a stream.
+      child: MaterialApp(
         home: HomePage(),
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
