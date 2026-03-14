@@ -1,6 +1,4 @@
-import 'dart:ffi';
-
-import 'package:expense_tracker/components/expense_summary.dart';
+import 'package:expense_tracker/components/expense_heatmap.dart';
 import 'package:expense_tracker/components/expense_tile.dart';
 import 'package:expense_tracker/data/expense_data.dart';
 import 'package:expense_tracker/models/expense_item.dart';
@@ -15,87 +13,169 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  // text controllers
   final newExpenseNameController = TextEditingController();
   final newExpenseAmountController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    // prepare data on startup
+    Provider.of<ExpenseData>(context, listen: false).prepareData();
+  }
+
+  // add new expense
   void addNewExpense() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Add new expense"),
+        title: const Text('Add new expense'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         content: Column(
-          mainAxisSize: MainAxisSize.min, //to minimize the hight of colum.
+          mainAxisSize: MainAxisSize.min,
           children: [
-            //Expense name
-            TextField(controller: newExpenseNameController),
-            //Expense amount
-            TextField(controller: newExpenseAmountController),
+            // expense name
+            TextField(
+              controller: newExpenseNameController,
+              decoration: InputDecoration(
+                hintText: "Expense Name",
+                filled: true,
+                fillColor: Theme.of(context).colorScheme.surfaceVariant,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            // expense amount
+            TextField(
+              controller: newExpenseAmountController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                hintText: "Amount",
+                filled: true,
+                fillColor: Theme.of(context).colorScheme.surfaceVariant,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
           ],
         ),
         actions: [
-          //save
-          MaterialButton(onPressed: save, child: Text("Save")),
-          //cancel
-          MaterialButton(onPressed: cancel, child: Text("Cancel")),
+          // cancel button
+          TextButton(onPressed: cancel, child: const Text('Cancel')),
+          // save button
+          ElevatedButton(onPressed: save, child: const Text('Save')),
         ],
       ),
     );
   }
 
-  //save
+  // save method
   void save() {
-    ExpenseItem newExpense = ExpenseItem(
-      name: newExpenseNameController.text,
-      amount: newExpenseAmountController.text,
-      dateTime: DateTime.now(),
-    );
-    //added new expense.
-    Provider.of<ExpenseData>(context, listen: false).addNewExpense(newExpense);
-    clear();
+    // only save if all fields are filled and amount is valid
+    if (newExpenseNameController.text.isNotEmpty &&
+        newExpenseAmountController.text.isNotEmpty) {
+      double? amount = double.tryParse(newExpenseAmountController.text);
+
+      // if amount is valid, then save
+      if (amount != null) {
+        // create expense item
+        ExpenseItem newExpense = ExpenseItem(
+          name: newExpenseNameController.text,
+          amount: amount,
+          dateTime: DateTime.now(),
+        );
+        // add the new expense
+        Provider.of<ExpenseData>(
+          context,
+          listen: false,
+        ).addNewExpense(newExpense);
+      }
+    }
+
     Navigator.pop(context);
+    clear();
   }
 
-  //cancel
+  // delete expense
+  void deleteExpense(ExpenseItem expense) {
+    Provider.of<ExpenseData>(context, listen: false).deleteExpense(expense);
+  }
+
+  // cancel method
   void cancel() {
-    clear();
     Navigator.pop(context);
+    clear();
   }
 
-  //clear filed
+  // clear controllers
   void clear() {
-    newExpenseAmountController.clear();
     newExpenseNameController.clear();
+    newExpenseAmountController.clear();
   }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<ExpenseData>(
-      builder: (context, value, child) => Scaffold(
-        backgroundColor: Colors.grey[300],
-        floatingActionButton: FloatingActionButton(
-          onPressed: addNewExpense,
-          child: Icon(Icons.add, color: Colors.white),
-          backgroundColor: Colors.black,
-        ),
-        body: ListView(
-          children: [
-            //weekly summary
-            ExpenseSummary(startOfWeek: value.startOfWeekDate()),
-
-            const SizedBox(height: 20),
-            //expense list
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: value.getallExpenseList().length,
-              itemBuilder: (context, index) => ExpenseTile(
-                name: value.getallExpenseList()[index].name,
-                amount: value.getallExpenseList()[index].amount,
-                dateTime: value.getallExpenseList()[index].dateTime,
+      builder: (context, value, child) {
+        return Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.background,
+          floatingActionButton: FloatingActionButton(
+            onPressed: addNewExpense,
+            shape: const CircleBorder(),
+            child: const Icon(Icons.add),
+          ),
+          body: CustomScrollView(
+            slivers: [
+              // App Bar
+              SliverAppBar(
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                expandedHeight: 100,
+                floating: true,
+                pinned: true,
+                flexibleSpace: const FlexibleSpaceBar(
+                  title: Text("Expense Tracker"),
+                  titlePadding: EdgeInsets.only(left: 16, bottom: 16),
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
+
+              // Heatmap
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ExpenseHeatmap(
+                    dailyExpenseSummary: value.calculateDailyExpenseSummery(),
+                    startDate: DateTime.now().subtract(
+                      const Duration(days: 120),
+                    ),
+                  ),
+                ),
+              ),
+
+              // List of expenses
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                sliver: SliverList.builder(
+                  itemCount: value.getallExpenseList().length,
+                  itemBuilder: (context, index) {
+                    var expense = value.getallExpenseList()[index];
+                    return ExpenseTile(
+                      name: expense.name,
+                      amount: expense.amount.toStringAsFixed(2),
+                      dateTime: expense.dateTime,
+                      deleteTapped: (p0) => deleteExpense(expense),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

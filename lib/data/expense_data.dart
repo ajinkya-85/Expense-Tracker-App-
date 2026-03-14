@@ -1,6 +1,7 @@
 import 'package:expense_tracker/DateTime/date_time_helper.dart';
 import 'package:expense_tracker/models/expense_item.dart';
 import 'package:flutter/material.dart';
+import 'package:expense_tracker/data/hive_database.dart';
 
 class ExpenseData extends ChangeNotifier {
   //list of all the expenses
@@ -11,16 +12,27 @@ class ExpenseData extends ChangeNotifier {
     return overallExpenseList;
   }
 
+  // prepare data to display
+  final db = HiveDatabase();
+  void prepareData() {
+    // if there exists data, get it
+    if (db.readData().isNotEmpty) {
+      overallExpenseList = db.readData();
+    }
+  }
+
   // add new expense
   void addNewExpense(ExpenseItem newItem) {
     overallExpenseList.add(newItem);
     notifyListeners();
+    db.saveData(overallExpenseList);
   }
 
   // delete an expense
-  void deleteExpense(ExpenseItem iteam) {
-    overallExpenseList.remove(iteam);
+  void deleteExpense(ExpenseItem item) {
+    overallExpenseList.remove(item);
     notifyListeners();
+    db.saveData(overallExpenseList);
   }
 
   //get the date for the start of the week (sunday)
@@ -86,7 +98,7 @@ class ExpenseData extends ChangeNotifier {
 
     for (var expense in overallExpenseList) {
       String date = converDateTimeToString(expense.dateTime);
-      double amount = double.parse(expense.amount);
+      double amount = expense.amount;
 
       if (dailyExpenseSummery.containsKey(date)) {
         double currentAmount = dailyExpenseSummery[date]!;

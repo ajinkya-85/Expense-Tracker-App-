@@ -1,20 +1,16 @@
-// convert datetime obj. into a string yyyymmdd
+String converDateTimeToString(DateTime dateTime) {
+  // year in the format -> yyyy
+  String year = dateTime.year.toString();
 
-String converDateTimeToString(DateTime datetime) {
-  //year in the format format yyyy
-  String year = datetime.year.toString();
-  //month in the format mm
-  String month = datetime.month.toString();
+  // month in the format -> mm
+  String month = dateTime.month.toString();
   if (month.length == 1) {
-    month = "0" + month;
+    month = '0$month';
   }
-  //day in the format of dd
-  String day = datetime.day.toString();
+  // day in the format -> dd
+  String day = dateTime.day.toString();
   if (day.length == 1) {
-    day = "0" + day;
+    day = '0$day';
   }
-  // final yyyymmdd
-  String yyyymmdd = year + month + day;
-
-  return yyyymmdd;
+  return year + month + day;
 }
