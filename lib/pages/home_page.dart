@@ -20,8 +20,13 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // prepare data on startup
-    Provider.of<ExpenseData>(context, listen: false).prepareData();
+  }
+
+  @override
+  void dispose() {
+    newExpenseNameController.dispose();
+    newExpenseAmountController.dispose();
+    super.dispose();
   }
 
   // add new expense
@@ -94,11 +99,11 @@ class _HomePageState extends State<HomePage> {
           context,
           listen: false,
         ).addNewExpense(newExpense);
+
+        Navigator.pop(context);
+        clear();
       }
     }
-
-    Navigator.pop(context);
-    clear();
   }
 
   // delete expense
@@ -123,7 +128,7 @@ class _HomePageState extends State<HomePage> {
     return Consumer<ExpenseData>(
       builder: (context, value, child) {
         return Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.background,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           floatingActionButton: FloatingActionButton(
             onPressed: addNewExpense,
             shape: const CircleBorder(),
@@ -148,7 +153,7 @@ class _HomePageState extends State<HomePage> {
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ExpenseHeatmap(
-                    dailyExpenseSummary: value.calculateDailyExpenseSummery(),
+                    dailyExpenseSummary: value.calculateDailyExpenseSummary(),
                     startDate: DateTime.now().subtract(
                       const Duration(days: 120),
                     ),
@@ -160,9 +165,9 @@ class _HomePageState extends State<HomePage> {
               SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 sliver: SliverList.builder(
-                  itemCount: value.getallExpenseList().length,
+                  itemCount: value.overallExpenseList.length,
                   itemBuilder: (context, index) {
-                    var expense = value.getallExpenseList()[index];
+                    var expense = value.overallExpenseList[index];
                     return ExpenseTile(
                       name: expense.name,
                       amount: expense.amount.toStringAsFixed(2),

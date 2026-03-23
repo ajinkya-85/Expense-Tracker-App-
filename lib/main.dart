@@ -11,12 +11,19 @@ void main() async {
   // initialize firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  runApp(
-    ChangeNotifierProvider(
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
       create: (context) =>
           ExpenseData(), // The constructor now handles data loading via a stream.
       child: MaterialApp(
-        home: HomePage(),
+        home: const HomePage(),
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
@@ -34,6 +41,6 @@ void main() async {
         ),
         themeMode: ThemeMode.system,
       ),
-    ),
-  );
+    );
+  }
 }
