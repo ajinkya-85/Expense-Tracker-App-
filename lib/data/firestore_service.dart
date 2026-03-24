@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/expense_item.dart';
+import 'package:expense_tracker/models/expense_item.dart';
 
 class FirestoreService {
   // Get collection of expenses
-  final CollectionReference expenses = FirebaseFirestore.instance.collection(
-    'expenses',
-  );
+  final CollectionReference<Map<String, dynamic>> expenses = FirebaseFirestore
+      .instance
+      .collection('expenses');
 
   // CREATE: Add a new expense. Firestore will auto-generate an ID.
-  Future<void> addExpense(ExpenseItem expense) {
-    return expenses.add({
+  Future<void> addExpense(ExpenseItem expense) async {
+    await expenses.add({
       'name': expense.name,
       'amount': expense.amount,
       'dateTime': expense.dateTime,
@@ -23,12 +23,13 @@ class FirestoreService {
         .snapshots()
         .map(
           (snapshot) => snapshot.docs.map((doc) {
-            final data = doc.data() as Map<String, dynamic>;
+            final data = doc.data();
             return ExpenseItem(
               id: doc.id,
-              name: data['name'],
-              amount: (data['amount'] as num).toDouble(),
-              dateTime: (data['dateTime'] as Timestamp).toDate(),
+              name: data['name'] as String? ?? 'Unknown Expense',
+              amount: (data['amount'] as num?)?.toDouble() ?? 0.0,
+              dateTime:
+                  (data['dateTime'] as Timestamp?)?.toDate() ?? DateTime.now(),
             );
           }).toList(),
         );
