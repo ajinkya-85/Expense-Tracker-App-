@@ -113,5 +113,5 @@ Widget getBottomTitles(double value, TitleMeta meta) {
       text = const Text(" ", style: style);
       break;
   }
-  return SideTitleWidget(child: text, meta: meta);
+  return SideTitleWidget(meta: meta, child: text);
 }

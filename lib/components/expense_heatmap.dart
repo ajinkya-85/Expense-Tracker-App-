@@ -52,7 +52,7 @@ class ExpenseHeatmap extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             spreadRadius: 1,
             blurRadius: 5,
             offset: const Offset(0, 3),
@@ -78,7 +78,7 @@ class ExpenseHeatmap extends StatelessWidget {
             showColorTip: false,
             defaultColor: Theme.of(
               context,
-            ).colorScheme.surfaceVariant.withOpacity(0.3),
+            ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
             textColor: Colors.transparent,
             colorsets: {
               1: Colors.blue.shade100,
