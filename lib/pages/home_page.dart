@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
               decoration: InputDecoration(
                 hintText: "Expense Name",
                 filled: true,
-                fillColor: Theme.of(context).colorScheme.surfaceVariant,
+                fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
@@ -60,7 +60,7 @@ class _HomePageState extends State<HomePage> {
               decoration: InputDecoration(
                 hintText: "Amount",
                 filled: true,
-                fillColor: Theme.of(context).colorScheme.surfaceVariant,
+                fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
